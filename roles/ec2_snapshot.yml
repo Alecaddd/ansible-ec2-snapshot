@@ -1,0 +1,33 @@
+- name: INFRASTRUCTURE ADD SNAPSHOT | Fetch id instance {{ name }}
+  ec2_remote_facts:
+    region: "{{ ec2_region }}"
+    filters:
+      "tag:Name": "{{ name }}"
+  register: ec2_instances
+
+- name: INFRASTRUCTURE ADD SNAPSHOT | Get snapshot id
+  ec2_snapshot_facts:
+    region: "{{ ec2_region }}"
+    filters:
+      "tag:id_instance": "{{ ec2_instances.instances.0.id }}"
+  register: id_snapshot
+  when: del_snapshot == "true"
+
+- name : INFRASTRUCTURE ADD SNAPSHOT | Create snapshot on volume {{ device_name }}
+  ec2_snapshot:
+    instance_id: "{{ ec2_instances.instances.0.id }}"
+    device_name: "{{ device_name }}"
+    ec2_url: "{{ ec2_url }}"
+    snapshot_tags:
+      Name: "{{ name }}"
+      id_instance: "{{ ec2_instances.instances.0.id }}"
+      volume: "{{ device_name }}"
+  when: add_snapshot == "true"
+
+- name: INFRASTRUCTURE ADD SNAPSHOT | Delete snapshot {{ id_snapshot.snapshots.0.snapshot_id }}
+  local_action:
+    module: ec2_snapshot
+    region: "{{ ec2_region }}"
+    snapshot_id: "{{ id_snapshot.snapshots.0.snapshot_id  }}"
+    state: absent
+  when: del_snapshot == "true"
