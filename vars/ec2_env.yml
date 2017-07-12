@@ -1,0 +1,4 @@
+device_name: # Instance Root Device (eg. /dev/sda)
+name: # Your EC2 Instance Name
+ec2_url: # Instance Region URL (eg. https://ec2.us-east-1.amazonaws.com)
+ec2_region: # Instance Region (eg. us-east-1)
