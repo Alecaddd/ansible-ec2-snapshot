@@ -1,0 +1,10 @@
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - vars/ec2_env.yml
+
+  # ansible-playbook playbook.yml -e"add_snapshot=true del_snapshot=true"
+  tasks:
+    - include: roles/ec2_snapshot.yml
+      when: add_snapshot == "true" or del_snapshot == "true"
